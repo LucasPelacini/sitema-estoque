@@ -69,3 +69,23 @@ def dar_baixa(produto_id: int, qtd_saida: int):
             return {"mensagem": f"Baixa de {qtd_saida} unidades realizada!", "item": item}
 
     raise HTTPException(status_code=404, detail="Produto não encontrado")
+
+@app.get("/estoque/resumo")
+def resumo():
+    hoje = datetime.now()
+    vencidos = 0
+    perto_vencimento = 0
+
+    for item in estoque_produtos:
+        data_validade = datetime.strptime(item["validade"], "%d-%m-%Y")
+        dias = (data_validade - hoje).days
+        if dias < 0:
+            vencidos += 1
+        elif dias <= 5:
+            perto_vencimento += 1
+
+    return {
+        "Total Itens Cadastrados": len(estoque_produtos),
+        "Itens Vencidos": vencidos,
+        "Perto do Vencimento": perto_vencimento
+    }
