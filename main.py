@@ -14,10 +14,10 @@ async def listar_estoque():
 
 # Simula um banco de dados
 estoque_produtos = [
-    {"Id": 1, "nome":"coca cola mini", "quantidade": 24, "validade": "15-03-2027"},
-    {"Id": 2, "nome":"coca cola lata", "quantidade": 12, "validade": "12-04-2026"},
-    {"Id": 3, "nome":"coca cola 600ml", "quantidade": 8, "validade": "18-04-2026"},
-    {"Id": 4, "nome":"coca cola 2litros", "quantidade": 10, "validade": "15-07-2027"}
+    {"id": 1, "nome":"coca cola mini", "quantidade": 24, "validade": "15-03-2027"},
+    {"id": 2, "nome":"coca cola lata", "quantidade": 12, "validade": "12-04-2026"},
+    {"id": 3, "nome":"coca cola 600ml", "quantidade": 8, "validade": "18-04-2026"},
+    {"id": 4, "nome":"coca cola 2litros", "quantidade": 10, "validade": "15-07-2027"}
 ]
 
 @app.get("/estoque/status")
@@ -49,10 +49,23 @@ def adicionar_item(nome: str, quantidade: int, validade: str):
 
     novo_id = len(estoque_produtos) + 1
     novo_item = {
-        "Id": novo_id,
+        "id": novo_id,
         "nome": nome,
         "quantidade": quantidade,
         "validade": validade,
     }
     estoque_produtos.append(novo_item)
     return {"Mensagem": "Item adicionado com sucesso.", "item": novo_item}
+
+
+@app.put("/estoque/baixa/{produto_id}")
+def dar_baixa(produto_id: int, qtd_saida: int):
+    for item in estoque_produtos:
+        if item["id"] == produto_id:
+            if item["quantidade"] < qtd_saida:
+                raise HTTPException(status_code=400, detail="Estoque insuficiente para essa saída!")
+
+            item["quantidade"] -= qtd_saida
+            return {"mensagem": f"Baixa de {qtd_saida} unidades realizada!", "item": item}
+
+    raise HTTPException(status_code=404, detail="Produto não encontrado")
