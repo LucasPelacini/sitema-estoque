@@ -41,3 +41,18 @@ def verificar_status():
         relatorio.append(item_analisado)
 
     return relatorio
+
+@app.post("/estoque/adicionar")
+def adicionar_item(nome: str, quantidade: int, validade: str):
+    if quantidade < 0:
+        raise HTTPException(status_code=400, detail="A quantidade não pode ser negativa.")
+
+    novo_id = len(estoque_produtos) + 1
+    novo_item = {
+        "Id": novo_id,
+        "nome": nome,
+        "quantidade": quantidade,
+        "validade": validade,
+    }
+    estoque_produtos.append(novo_item)
+    return {"Mensagem": "Item adicionado com sucesso.", "item": novo_item}
