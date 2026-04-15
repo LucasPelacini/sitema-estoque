@@ -19,3 +19,25 @@ estoque_produtos = [
     {"Id": 3, "nome":"coca cola 600ml", "quantidade": 8, "validade": "18-04-2026"},
     {"Id": 4, "nome":"coca cola 2litros", "quantidade": 10, "validade": "15-07-2027"}
 ]
+
+@app.get("/estoque/status")
+def verificar_status():
+    hoje = datetime.now()
+    relatorio = []
+
+    for item in estoque_produtos:
+        data_validade = datetime.strptime(item["validade"], "%d-%m-%Y")
+        dias_restantes = (data_validade - hoje).days
+
+        if dias_restantes < 0:
+            status = "O produto esta vencido, deve ser descartado imediatamente."
+        elif dias_restantes <= 5:
+            status = "Cuidado - O produto esta proximo da sua data de validade."
+        else:
+            status = "O prdduto esta com sua data de validade em dia."
+
+        item_analisado = item.copy()
+        item_analisado["status"] = status
+        relatorio.append(item_analisado)
+
+    return relatorio
