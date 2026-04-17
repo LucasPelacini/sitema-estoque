@@ -1,0 +1,37 @@
+name: Workflow do estoque
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+
+#Ci / Verificação de qualidade
+
+  verifica-qualidade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar Codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências (requirements.txt)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Testar sintaxe
+        run: python -m py_compile main.py
+
+  entrega-continua:
+    needs: verifica-qualidade
+    runs-on: ubuntu-latest
+    steps:
+      - name: simula deploy
+        run: echo "O sistema de estoque está validado e pronto."
