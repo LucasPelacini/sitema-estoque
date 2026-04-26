@@ -35,3 +35,11 @@ jobs:
     steps:
       - name: simula deploy
         run: echo "O sistema de estoque está validado e pronto."
+
+
+      - name: Envia Alerta para o Discord
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          MESSAGE="🚀 **Sistema de Estoque - Status DevOps**\n👤 Usuário: LucasPelacini\n📈 Status do Pipeline: $STATUS"
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"$MESSAGE\"}" ${{ secrets.DISCORD_WEBHOOK }}
