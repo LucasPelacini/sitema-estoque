@@ -29,6 +29,13 @@ jobs:
       - name: Testar sintaxe
         run: python -m py_compile main.py
 
+      - name: Rodar Testes
+        run: |
+          pip install httpx pytest
+          pytest test_main.py
+
+
+
   entrega-continua:
     needs: verifica-qualidade
     runs-on: ubuntu-latest
